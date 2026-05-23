@@ -15,6 +15,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ draftId: strin
       await versionService.createVersionForDraftUpdate({ draftAfter: fresh, source: 'auto_fix', summary: 'Applied safe quality fixes' });
     }
   }
-  const status = result.ok ? 200 : result.error.code === 'draft_not_found' ? 404 : 400;
+  const status = !result.ok && 'error' in result && result.error.code === 'draft_not_found' ? 404 : result.ok ? 200 : 400;
   return new Response(JSON.stringify(result), { status, headers: { 'content-type': 'application/json' } });
 }

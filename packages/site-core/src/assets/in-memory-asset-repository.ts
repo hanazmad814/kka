@@ -9,7 +9,7 @@ export class InMemoryAssetRepository implements AssetRepository {
   }
   async getAssetById(assetId: string): Promise<MediaAsset | null> { const a=this.items.get(assetId); return a?structuredClone(a):null; }
   async listAssets(filter?: ListAssetsFilter): Promise<MediaAsset[]> {
-    let list=[...this.items.values()];
+    let list=Array.from(this.items.values());
     if (filter?.draftId) list=list.filter((x)=>x.draftId===filter.draftId);
     if (filter?.productType) list=list.filter((x)=>x.productType===filter.productType);
     return list.sort((a,b)=>b.meta.createdAt-a.meta.createdAt).map((x)=>structuredClone(x));
