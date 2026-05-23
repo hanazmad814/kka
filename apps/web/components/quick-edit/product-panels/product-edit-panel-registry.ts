@@ -1,0 +1,11 @@
+import { restaurantEditPanel } from './restaurant';
+import { businessEditPanel } from './business';
+import { weddingEditPanel } from './wedding';
+import type { ProductType } from '../../../../../packages/core/src';
+import type { ProductDraft } from '../../../../../packages/site-core/src/drafts';
+const defs = [restaurantEditPanel,businessEditPanel,weddingEditPanel];
+export const getProductEditPanelDefinition = (productType: ProductType) => defs.find((d)=>d.productTypes.includes(productType));
+export const getSupportedQuickEditProductTypes = () => defs.flatMap((d)=>d.productTypes);
+export const draftToProductEditForm = (draft: ProductDraft) => getProductEditPanelDefinition(draft.productType)?.draftToForm(draft);
+export const validateProductEditForm = (productType: ProductType, state: unknown) => getProductEditPanelDefinition(productType)?.validate(state as never) ?? {ok:false,errors:[{path:'productType',message:'Unsupported product type'}]};
+export const productEditFormToUpdateRequest = (productType: ProductType, state: unknown) => getProductEditPanelDefinition(productType)?.toUpdateRequest(state as never);

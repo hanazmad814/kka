@@ -1,0 +1,1 @@
+export { filterCompatibleGenomes } from '../compatibility';

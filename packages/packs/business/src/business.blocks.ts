@@ -1,0 +1,5 @@
+import type { BlockDefinition } from '../../../product-engine/src/recipes';
+const block = (id: string, category: BlockDefinition['category'] = 'content'): BlockDefinition => ({ id, category, defaultProps: { variant: 'default' }, validator: () => true });
+export const businessBlockDefinitions: BlockDefinition[] = [
+  block('BusinessHeroBlock', 'hero'), block('BenefitBlock'), block('ProblemSolutionBlock'), block('ServiceCardsBlock'), block('ServicePreviewBlock'), block('ProcessBlock'), block('SocialProofBlock'), block('TestimonialStripBlock'), block('PricingTableBlock'), block('PricingPreviewBlock'), block('FAQBlock'), block('CTASectionBlock', 'cta'), block('ContactLeadFormBlock', 'cta'), block('ContactInfoBlock'), block('AboutHeroBlock', 'hero'), block('StoryBlock'), block('ValuesBlock'), block('TeamBlock'), block('MapEmbedBlock'), block('SocialLinksBlock'), block('FooterBlock', 'footer'), block('ServicesHeroBlock', 'hero'), block('PricingHeroBlock', 'hero'), block('ContactHeroBlock', 'hero')
+];
