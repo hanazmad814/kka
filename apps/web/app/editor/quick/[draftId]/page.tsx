@@ -38,13 +38,13 @@ export default function QuickEditorPage({ params }: QuickEditorPageProps) {
       action={
         <div className="flex items-center gap-2">
           <Link href="/create" className="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">Quay lại Create</Link>
-          <Link href={`/p/${params.draftId}`} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-700">Xem public preview</Link>
+          <Link href={`/p/${params.draftId}`} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-700">Xem trang đã publish</Link>
         </div>
       }
     >
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold">Outcome-first Workflow</h3>
+          <h3 className="text-lg font-semibold">Luồng vận hành thực tế</h3>
           <ol className="mt-3 grid gap-2 sm:grid-cols-2">
             {flowSteps.map((step, index) => (
               <li key={step} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
@@ -54,7 +54,7 @@ export default function QuickEditorPage({ params }: QuickEditorPageProps) {
             ))}
           </ol>
 
-          <h4 className="mt-5 text-sm font-semibold text-slate-900">Core Engine Modules</h4>
+          <h4 className="mt-5 text-sm font-semibold text-slate-900">Các module hệ thống đang vận hành</h4>
           <div className="mt-2 flex flex-wrap gap-2">
             {platformModules.map((module) => (
               <span key={module} className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-xs text-sky-800">{module}</span>
