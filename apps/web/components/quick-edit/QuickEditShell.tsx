@@ -17,6 +17,7 @@ export function QuickEditShell({ draft }: { draft: ProductDraft }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+  const [showAdvancedJson, setShowAdvancedJson] = useState(false);
 
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState('');
@@ -27,7 +28,8 @@ export function QuickEditShell({ draft }: { draft: ProductDraft }) {
   const isDirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(initial), [form, initial]);
   const validation = validateQuickEditForm(currentDraft.productType, form);
   const panelDef = getProductEditPanelDefinition(currentDraft.productType);
-
+  const PanelComponent = panelDef?.Component as ((props: { value: unknown; onChange: (next: unknown) => void; errors?: unknown[] }) => JSX.Element) | undefined;
+  const canShowAdvancedJson = process.env.NODE_ENV !== 'production';
 
   const onPublish = async () => {
     setPublishing(true); setPublishError('');
@@ -61,7 +63,16 @@ export function QuickEditShell({ draft }: { draft: ProductDraft }) {
   };
 
   return <section>
-    <h1>Quick Edit</h1>
+    <header>
+      <h1>Quick Edit</h1>
+      <p>Draft: {currentDraft.id} • Product: {currentDraft.productType}</p>
+      <p>Status: {saving ? 'saving' : error ? 'save failed' : !validation.valid ? 'validation error' : isDirty ? 'dirty' : saved ? 'saved' : 'clean'}</p>
+      <div>
+        <button disabled={!isDirty || !validation.valid || saving} onClick={() => void save()}>{saving ? 'Saving...' : 'Save changes'}</button>
+        <button onClick={() => setActivePanel('quality')}>Run quality check</button>
+        <button disabled={publishing || saving} onClick={() => void onPublish()}>{publishing ? 'Publishing...' : 'Publish'}</button>
+      </div>
+    </header>
 
     <nav>
       <button onClick={() => setActivePanel('content')} disabled={activePanel==='content'}>Content</button>
@@ -70,28 +81,33 @@ export function QuickEditShell({ draft }: { draft: ProductDraft }) {
       <button onClick={() => setActivePanel('versions')} disabled={activePanel==='versions'}>Versions</button>
     </nav>
 
-    <p>Draft: {currentDraft.id}</p>
     {activePanel === 'content' && <>
-    {!panelDef && <p>Quick Edit for this product type is not available yet.</p>}
-    {panelDef && <>
-      <p>Product: {currentDraft.productType}</p>
-      <label>JSON Data Patch Model
-        <textarea value={JSON.stringify(form, null, 2)} onChange={(e: { target: { value: string } }) => {
-          try { setForm(JSON.parse(e.target.value) as unknown); } catch {}
-        }} rows={16} cols={80} />
-      </label>
-      {!validation.valid && <p role='alert'>{validation.errors[0]}</p>}
-      {error && <p role='alert'>{error}</p>}
-      {saved && <p>Saved.</p>}
-      <button disabled={!isDirty || !validation.valid || saving} onClick={() => void save()}>{saving ? 'Saving...' : 'Save draft'}</button>
-    </>}
-
+      {!panelDef && <p>Quick Edit for this product type is not available yet.</p>}
+      {panelDef && <>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+          <div>
+            {PanelComponent && <PanelComponent value={form as never} onChange={(next) => setForm(next)} errors={validation.errors as never} />}
+            {canShowAdvancedJson && <>
+              <button onClick={() => setShowAdvancedJson(!showAdvancedJson)}>{showAdvancedJson ? 'Hide Advanced JSON' : 'Advanced JSON (Dev)'}</button>
+              {showAdvancedJson && <label>JSON Data Patch Model
+                <textarea value={JSON.stringify(form, null, 2)} onChange={(e: { target: { value: string } }) => {
+                  try { setForm(JSON.parse(e.target.value) as unknown); } catch {}
+                }} rows={16} cols={80} />
+              </label>}
+            </>}
+          </div>
+          <aside><p>Live preview</p>{publishResult?.publicUrl ? <a href={publishResult.publicUrl} target='_blank' rel='noreferrer'>Open public preview</a> : <p>Publish to generate public URL preview.</p>}</aside>
+        </div>
+        {!validation.valid && <p role='alert'>{String(validation.errors[0] ?? '')}</p>}
+        {error && <p role='alert'>{error}</p>}
+        {saved && <p>Saved.</p>}
+      </>}
     </>}
     {activePanel === 'style' && <p>Style switching will be expanded later.</p>}
     {activePanel === 'quality' && <QualityCheckPanel draftId={currentDraft.id} forced={latestQuality} onDraftUpdated={() => setSaved(true)} onGoToFix={(panel) => { if (panel === 'style') setActivePanel('style'); else setActivePanel('content'); }} />}
     {activePanel === 'versions' && <VersionHistoryPanel draft={currentDraft} dirty={isDirty} onRollback={(next)=>{ setCurrentDraft(next); const f=draftToQuickEditForm(next); setForm(f); setInitial(f); setSaved(true); }} />}
+
     <div>
-      <button disabled={publishing || saving} onClick={() => void onPublish()}>{publishing ? 'Publishing...' : 'Publish'}</button>
       {publishError && <p role='alert'>{publishError}</p>}
       {publishResult && <p>Published v{publishResult.version}: <a href={publishResult.publicUrl} target='_blank' rel='noreferrer'>{publishResult.publicUrl}</a></p>}
     </div>
