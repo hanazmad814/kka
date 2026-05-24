@@ -1,13 +1,26 @@
-import { draftRepositorySingleton } from '../../../../../../packages/site-core/src/storage';
-import { QuickEditShell } from '../../../../components/quick-edit/QuickEditShell';
+import Link from 'next/link';
+import { AppShell } from '../../../../components/AppShell';
 
-export default async function QuickEditorPage({ params }: { params: Promise<{ draftId: string }> }) {
-  const { draftId } = await params;
-  const draft = await draftRepositorySingleton.getDraftById(draftId);
+type QuickEditorPageProps = {
+  params: {
+    draftId: string;
+  };
+};
 
-  if (!draft) {
-    return <section><h1>Quick Edit</h1><p>Draft not found.</p><a href='/create'>Back to Create Wizard</a></section>;
-  }
-
-  return <QuickEditShell draft={draft} />;
+export default function QuickEditorPage({ params }: QuickEditorPageProps) {
+  return (
+    <AppShell
+      title={`Quick Edit Draft: ${params.draftId}`}
+      description="Placeholder cho trải nghiệm sửa nhanh bằng form, hiển thị issue quality gate và cho phép auto-fix trước khi publish."
+      action={
+        <Link href="/create" className="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
+          Quay lại Create
+        </Link>
+      }
+    >
+      <section className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600">
+        Placeholder: Quick Edit panel + Quality Check panel sẽ hiển thị tại đây.
+      </section>
+    </AppShell>
+  );
 }
