@@ -11,7 +11,8 @@ type AppShellProps = {
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/create', label: 'Create' },
-  { href: '/editor/quick/demo-draft', label: 'Quick Edit' }
+  { href: '/editor/quick/demo-draft', label: 'Quick Edit' },
+  { href: '/p/demo-product', label: 'Public Product' }
 ];
 
 export function AppShell({ children, title, description, action }: AppShellProps) {
@@ -22,6 +23,7 @@ export function AppShell({ children, title, description, action }: AppShellProps
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Smart Product Builder</p>
             <h1 className="text-base font-semibold sm:text-lg">Outcome-first · Editor-second platform</h1>
+            <p className="mt-1 text-xs text-slate-500">Input → Generate → Select → Quick Edit → Quality Check → Publish</p>
           </div>
           <nav className="flex flex-wrap items-center gap-2 text-sm">
             {navItems.map((item) => (

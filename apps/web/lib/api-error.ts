@@ -7,7 +7,9 @@ export type ApiErrorCode =
   | 'UNPROCESSABLE_ENTITY'
   | 'INTERNAL_ERROR'
   | 'METHOD_NOT_ALLOWED'
-  | 'TOO_MANY_REQUESTS';
+  | 'TOO_MANY_REQUESTS'
+  | 'UNAUTHORIZED'
+  | 'FORBIDDEN';
 
 export type ApiErrorPayload = {
   error: {
@@ -15,6 +17,7 @@ export type ApiErrorPayload = {
     message: string;
     details?: unknown;
     traceId?: string;
+    timestamp: string;
   };
 };
 
@@ -25,7 +28,9 @@ const statusByCode: Record<ApiErrorCode, number> = {
   UNPROCESSABLE_ENTITY: 422,
   INTERNAL_ERROR: 500,
   METHOD_NOT_ALLOWED: 405,
-  TOO_MANY_REQUESTS: 429
+  TOO_MANY_REQUESTS: 429,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403
 };
 
 export type ApiErrorOptions = {
@@ -38,6 +43,7 @@ export function toApiErrorResponse(code: ApiErrorCode, message: string, options:
     error: {
       code,
       message,
+      timestamp: new Date().toISOString(),
       ...(options.details !== undefined ? { details: options.details } : {}),
       ...(options.traceId ? { traceId: options.traceId } : {})
     }
