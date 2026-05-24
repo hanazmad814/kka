@@ -9,47 +9,25 @@ import type {
 
 export type { ProductCategory, ProductDataModel, ProductType, GenerationPipelineStep };
 
-export interface ColorPalette {
-  primary: string;
-  secondary: string;
-  background: string;
-  text: string;
+export interface ProductDraft {
+  id: string;
+  productType: ProductType;
+  productCategory: ProductCategory;
+  createdAtIso: string;
+  updatedAtIso: string;
+  dataModel: ProductDataModel;
+  scene: SceneDocument;
+  currentStep: GenerationPipelineStep;
+  qualityScore?: number;
 }
 
-export interface TypographySystem {
-  fontFamily: string;
-  baseSize: number;
-  scale: number;
-}
-
-export interface SpacingSystem {
-  unit: number;
-  steps: number[];
-}
-
-export interface RadiusSystem {
-  sm: number;
-  md: number;
-  lg: number;
-}
-
-export interface ShadowSystem {
-  sm: string;
-  md: string;
-  lg: string;
-}
-
-export interface MotionSystem {
-  fastMs: number;
-  normalMs: number;
-  slowMs: number;
-}
-
-export interface BreakpointSystem {
-  mobile: number;
-  tablet: number;
-  desktop: number;
-}
+export interface ColorPalette { primary: string; secondary: string; background: string; text: string; }
+export interface TypographySystem { fontFamily: string; baseSize: number; scale: number; }
+export interface SpacingSystem { unit: number; steps: number[]; }
+export interface RadiusSystem { sm: number; md: number; lg: number; }
+export interface ShadowSystem { sm: string; md: string; lg: string; }
+export interface MotionSystem { fastMs: number; normalMs: number; slowMs: number; }
+export interface BreakpointSystem { mobile: number; tablet: number; desktop: number; }
 
 export interface SiteDesignSystem {
   colors: ColorPalette;
@@ -61,31 +39,11 @@ export interface SiteDesignSystem {
   breakpoints: BreakpointSystem;
 }
 
-export interface SitePageRef {
-  id: string;
-  path: string;
-  title: string;
-}
-
-export interface SiteMap {
-  pages: SitePageRef[];
-}
-
-export interface SiteNavItem {
-  id: string;
-  label: string;
-  pageId: string;
-  children?: SiteNavItem[];
-}
-
-export interface SiteNavigation {
-  items: SiteNavItem[];
-}
-
-export interface PublishConfig {
-  allowDraftPublish: false;
-  channel: 'production' | 'staging';
-}
+export interface SitePageRef { id: string; path: string; title: string; }
+export interface SiteMap { pages: SitePageRef[]; }
+export interface SiteNavItem { id: string; label: string; pageId: string; children?: SiteNavItem[]; }
+export interface SiteNavigation { items: SiteNavItem[]; }
+export interface PublishConfig { allowDraftPublish: false; channel: 'production' | 'staging'; }
 
 export interface OutcomeFirstMeta {
   pipeline: GenerationPipelineStep[];
@@ -93,12 +51,13 @@ export interface OutcomeFirstMeta {
   selectedVariantId?: string;
   generatedVariantCount: number;
   qualityScore?: number;
+  publishReady?: boolean;
 }
 
 export interface ProductSite {
   id: string;
   productType: ProductType;
-  productCategory?: ProductCategory;
+  productCategory: ProductCategory;
   schemaVersion: string;
   siteMap: SiteMap;
   navigation: SiteNavigation;
@@ -106,19 +65,11 @@ export interface ProductSite {
   pages: Record<string, SceneDocument>;
   dataModel: ProductDataModel;
   publishConfig: PublishConfig;
-  outcomeFirstMeta?: OutcomeFirstMeta;
+  outcomeFirstMeta: OutcomeFirstMeta;
 }
 
-export interface PublishedRoute {
-  path: string;
-  pageId: string;
-}
-
-export interface PublishedAsset {
-  id: string;
-  url: string;
-  mimeType: string;
-}
+export interface PublishedRoute { path: string; pageId: string; }
+export interface PublishedAsset { id: string; url: string; mimeType: string; }
 
 export interface PublishedSiteSnapshot {
   id: string;
