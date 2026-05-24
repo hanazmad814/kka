@@ -1,16 +1,33 @@
 import { createValidationIssue, type ValidationResult, validResult } from './validation';
 
+export type SceneNodeType =
+  | 'text'
+  | 'image'
+  | 'shape'
+  | 'button'
+  | 'group'
+  | 'frame'
+  | 'product-block'
+  | 'form'
+  | 'embed'
+  | 'collection'
+  | 'icon'
+  | 'video'
+  | 'audio';
+
 export interface BaseSceneNode {
   id: string;
-  type: string;
+  type: SceneNodeType;
   x: number;
   y: number;
   width: number;
   height: number;
+  visible?: boolean;
+  locked?: boolean;
 }
 
 export interface TextNode extends BaseSceneNode { type: 'text'; text: string; }
-export interface ImageNode extends BaseSceneNode { type: 'image'; src: string; alt?: string; }
+export interface ImageNode extends BaseSceneNode { type: 'image'; src: string; alt?: string; assetId?: string; }
 export interface ShapeNode extends BaseSceneNode { type: 'shape'; shape: 'rectangle' | 'circle'; }
 export interface ButtonNode extends BaseSceneNode { type: 'button'; label: string; action: string; }
 export interface GroupNode extends BaseSceneNode { type: 'group'; children: string[]; }
@@ -20,10 +37,23 @@ export interface FormNode extends BaseSceneNode { type: 'form'; fields: string[]
 export interface EmbedNode extends BaseSceneNode { type: 'embed'; provider: string; embedUrl: string; }
 export interface CollectionNode extends BaseSceneNode { type: 'collection'; source: string; }
 export interface IconNode extends BaseSceneNode { type: 'icon'; icon: string; }
-export interface VideoNode extends BaseSceneNode { type: 'video'; src: string; }
-export interface AudioNode extends BaseSceneNode { type: 'audio'; src: string; }
+export interface VideoNode extends BaseSceneNode { type: 'video'; src: string; assetId?: string; }
+export interface AudioNode extends BaseSceneNode { type: 'audio'; src: string; assetId?: string; }
 
-export type SceneNode = TextNode | ImageNode | ShapeNode | ButtonNode | GroupNode | FrameNode | ProductBlockNode | FormNode | EmbedNode | CollectionNode | IconNode | VideoNode | AudioNode;
+export type SceneNode =
+  | TextNode
+  | ImageNode
+  | ShapeNode
+  | ButtonNode
+  | GroupNode
+  | FrameNode
+  | ProductBlockNode
+  | FormNode
+  | EmbedNode
+  | CollectionNode
+  | IconNode
+  | VideoNode
+  | AudioNode;
 
 export const validateSceneNode = (node: SceneNode): ValidationResult => {
   const issues = [] as ReturnType<typeof createValidationIssue>[];
@@ -36,6 +66,9 @@ export const validateSceneNode = (node: SceneNode): ValidationResult => {
   }
   if ((node.type === 'group' || node.type === 'frame') && node.children.length === 0) {
     issues.push(createValidationIssue({ code: 'NODE_CHILDREN_EMPTY', message: `${node.type} node should have children.`, path: 'children', severity: 'warning' }));
+  }
+  if (node.width <= 0 || node.height <= 0) {
+    issues.push(createValidationIssue({ code: 'NODE_SIZE_NON_POSITIVE', message: 'SceneNode width/height should be positive.', path: 'width', severity: 'error' }));
   }
   return issues.length === 0 ? validResult() : { valid: false, issues };
 };

@@ -3,6 +3,7 @@ import {
   createDeterministicId,
   createPrefixedId,
   createSceneDocumentFixture,
+  migrateAndSaveSceneDocument,
   migrateSceneDocument,
   sceneDocumentSchema,
   validateSceneAsset,
@@ -37,5 +38,21 @@ describe('core foundation', () => {
     const migrated = migrateSceneDocument(doc, '2.0.0');
     expect(migrated.changed).toBe(true);
     expect(migrated.migrated.schemaVersion).toBe('2.0.0');
+  });
+
+  it('migrateAndSaveSceneDocument persists when version changes', async () => {
+    const doc = createSceneDocumentFixture();
+    let saved = 0;
+    const repo = {
+      getById: async () => doc,
+      save: async (document: typeof doc) => {
+        saved += 1;
+        return document;
+      }
+    };
+
+    const result = await migrateAndSaveSceneDocument(repo, doc.id, '2.0.0');
+    expect(result.changed).toBe(true);
+    expect(saved).toBe(1);
   });
 });

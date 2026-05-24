@@ -12,12 +12,22 @@ export interface ScenePage {
   nodesById: Record<string, SceneNode>;
 }
 
+export interface SceneDocumentMeta {
+  tenantId: string;
+  projectId: string;
+  draftId: string;
+  createdAtIso: string;
+  updatedAtIso: string;
+  createdBy: string;
+}
+
 export interface SceneDocument {
   id: string;
   pageId: string;
   schemaVersion: string;
   pages: ScenePage[];
   assets: SceneAsset[];
+  metadata: SceneDocumentMeta;
 }
 
 export const validateSceneDocument = (document: SceneDocument): ValidationResult => {
@@ -31,6 +41,9 @@ export const validateSceneDocument = (document: SceneDocument): ValidationResult
     if (!page.nodesById || typeof page.nodesById !== 'object') {
       issues.push(createValidationIssue({ code: 'SCENE_NODES_REQUIRED', message: 'SceneDocument page must have nodesById object.', path: `pages.${page.id}.nodesById`, severity: 'error' }));
       continue;
+    }
+    if (!page.nodesById[page.rootNodeId]) {
+      issues.push(createValidationIssue({ code: 'SCENE_ROOT_NODE_NOT_FOUND', message: 'ScenePage rootNodeId must exist in nodesById.', path: `pages.${page.id}.rootNodeId`, severity: 'error' }));
     }
     const results = Object.values(page.nodesById).map((node) => validateSceneNode(node));
     const combined = combineValidationResults(...results);
@@ -49,6 +62,10 @@ export const validateSceneDocument = (document: SceneDocument): ValidationResult
 
   const assetResults = document.assets.map((asset) => validateSceneAsset(asset));
   issues.push(...combineValidationResults(...assetResults).issues);
+
+  if (!document.metadata?.tenantId || !document.metadata?.projectId || !document.metadata?.draftId) {
+    issues.push(createValidationIssue({ code: 'SCENE_METADATA_REQUIRED', message: 'SceneDocument metadata tenant/project/draft is required.', path: 'metadata', severity: 'error' }));
+  }
 
   return issues.length === 0 ? validResult() : { valid: false, issues };
 };
@@ -69,5 +86,13 @@ export const createSceneDocumentFixture = (): SceneDocument => ({
       }
     }
   ],
-  assets: []
+  assets: [],
+  metadata: {
+    tenantId: 'tenant_prod_001',
+    projectId: 'project_prod_001',
+    draftId: 'draft_prod_001',
+    createdAtIso: '2026-01-01T00:00:00.000Z',
+    updatedAtIso: '2026-01-01T00:00:00.000Z',
+    createdBy: 'system'
+  }
 });
