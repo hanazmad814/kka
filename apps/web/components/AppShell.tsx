@@ -10,19 +10,20 @@ type AppShellProps = {
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/create', label: 'Create' }
+  { href: '/create', label: 'Create' },
+  { href: '/editor/quick/demo-draft', label: 'Quick Edit' }
 ];
 
 export function AppShell({ children, title, description, action }: AppShellProps) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Smart Product Builder</p>
-            <h1 className="text-base font-semibold sm:text-lg">Outcome-first website builder</h1>
+            <h1 className="text-base font-semibold sm:text-lg">Outcome-first · Editor-second platform</h1>
           </div>
-          <nav className="flex items-center gap-3 text-sm">
+          <nav className="flex flex-wrap items-center gap-2 text-sm">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} className="rounded-md px-3 py-2 hover:bg-slate-100">
                 {item.label}

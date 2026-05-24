@@ -5,13 +5,16 @@ export type ApiErrorCode =
   | 'NOT_FOUND'
   | 'CONFLICT'
   | 'UNPROCESSABLE_ENTITY'
-  | 'INTERNAL_ERROR';
+  | 'INTERNAL_ERROR'
+  | 'METHOD_NOT_ALLOWED'
+  | 'TOO_MANY_REQUESTS';
 
 export type ApiErrorPayload = {
   error: {
     code: ApiErrorCode;
     message: string;
     details?: unknown;
+    traceId?: string;
   };
 };
 
@@ -20,15 +23,23 @@ const statusByCode: Record<ApiErrorCode, number> = {
   NOT_FOUND: 404,
   CONFLICT: 409,
   UNPROCESSABLE_ENTITY: 422,
-  INTERNAL_ERROR: 500
+  INTERNAL_ERROR: 500,
+  METHOD_NOT_ALLOWED: 405,
+  TOO_MANY_REQUESTS: 429
 };
 
-export function toApiErrorResponse(code: ApiErrorCode, message: string, details?: unknown) {
+export type ApiErrorOptions = {
+  details?: unknown;
+  traceId?: string;
+};
+
+export function toApiErrorResponse(code: ApiErrorCode, message: string, options: ApiErrorOptions = {}) {
   const payload: ApiErrorPayload = {
     error: {
       code,
       message,
-      ...(details !== undefined ? { details } : {})
+      ...(options.details !== undefined ? { details: options.details } : {}),
+      ...(options.traceId ? { traceId: options.traceId } : {})
     }
   };
 
@@ -40,5 +51,7 @@ export function unknownToApiError(error: unknown, fallbackMessage = 'Unexpected 
     return toApiErrorResponse('INTERNAL_ERROR', error.message || fallbackMessage);
   }
 
-  return toApiErrorResponse('INTERNAL_ERROR', fallbackMessage, error);
+  return toApiErrorResponse('INTERNAL_ERROR', fallbackMessage, {
+    details: error
+  });
 }
