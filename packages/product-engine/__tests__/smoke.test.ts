@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { AssemblyEngine } from '../src/index';
+import { PRODUCT_ENGINE_VERSION, type ProductGenerationService } from '../src/index';
+
 describe('product-engine smoke', () => {
-  it('exports types', () => {
-    const present: AssemblyEngine | null = null;
-    expect(present).toBeNull();
+  it('exports generation service contracts', () => {
+    expect(PRODUCT_ENGINE_VERSION).toBe('1.0.0');
+    const service: ProductGenerationService | null = null;
+    expect(service).toBeNull();
   });
 });

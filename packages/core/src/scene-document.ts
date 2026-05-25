@@ -1,13 +1,8 @@
 import type { SceneNode } from './scene-node';
 import { combineValidationResults, createValidationIssue, type ValidationResult, validResult } from './validation';
 import { validateSceneNode } from './scene-node';
-
-export interface SceneAsset {
-  id: string;
-  type: 'image' | 'video' | 'audio' | 'file';
-  url: string;
-  mimeType: string;
-}
+import type { SceneAsset } from './scene-asset';
+import { validateSceneAsset } from './scene-asset';
 
 export interface ScenePage {
   id: string;
@@ -17,21 +12,23 @@ export interface ScenePage {
   nodesById: Record<string, SceneNode>;
 }
 
+export interface SceneDocumentMeta {
+  tenantId: string;
+  projectId: string;
+  draftId: string;
+  createdAtIso: string;
+  updatedAtIso: string;
+  createdBy: string;
+}
+
 export interface SceneDocument {
   id: string;
   pageId: string;
   schemaVersion: string;
   pages: ScenePage[];
   assets: SceneAsset[];
+  metadata: SceneDocumentMeta;
 }
-
-export const validateSceneAsset = (asset: SceneAsset): ValidationResult => {
-  const issues = [];
-  if (!asset.id) issues.push(createValidationIssue({ code: 'ASSET_ID_REQUIRED', message: 'Asset id is required.', path: 'id', severity: 'error' }));
-  if (!asset.url) issues.push(createValidationIssue({ code: 'ASSET_URL_REQUIRED', message: 'Asset url is required.', path: 'url', severity: 'error' }));
-  if (!asset.mimeType) issues.push(createValidationIssue({ code: 'ASSET_MIME_REQUIRED', message: 'Asset mimeType is required.', path: 'mimeType', severity: 'error' }));
-  return issues.length === 0 ? validResult() : { valid: false, issues };
-};
 
 export const validateSceneDocument = (document: SceneDocument): ValidationResult => {
   const issues = [];
@@ -44,6 +41,9 @@ export const validateSceneDocument = (document: SceneDocument): ValidationResult
     if (!page.nodesById || typeof page.nodesById !== 'object') {
       issues.push(createValidationIssue({ code: 'SCENE_NODES_REQUIRED', message: 'SceneDocument page must have nodesById object.', path: `pages.${page.id}.nodesById`, severity: 'error' }));
       continue;
+    }
+    if (!page.nodesById[page.rootNodeId]) {
+      issues.push(createValidationIssue({ code: 'SCENE_ROOT_NODE_NOT_FOUND', message: 'ScenePage rootNodeId must exist in nodesById.', path: `pages.${page.id}.rootNodeId`, severity: 'error' }));
     }
     const results = Object.values(page.nodesById).map((node) => validateSceneNode(node));
     const combined = combineValidationResults(...results);
@@ -62,6 +62,10 @@ export const validateSceneDocument = (document: SceneDocument): ValidationResult
 
   const assetResults = document.assets.map((asset) => validateSceneAsset(asset));
   issues.push(...combineValidationResults(...assetResults).issues);
+
+  if (!document.metadata?.tenantId || !document.metadata?.projectId || !document.metadata?.draftId) {
+    issues.push(createValidationIssue({ code: 'SCENE_METADATA_REQUIRED', message: 'SceneDocument metadata tenant/project/draft is required.', path: 'metadata', severity: 'error' }));
+  }
 
   return issues.length === 0 ? validResult() : { valid: false, issues };
 };
@@ -82,5 +86,13 @@ export const createSceneDocumentFixture = (): SceneDocument => ({
       }
     }
   ],
-  assets: []
+  assets: [],
+  metadata: {
+    tenantId: 'tenant_prod_001',
+    projectId: 'project_prod_001',
+    draftId: 'draft_prod_001',
+    createdAtIso: '2026-01-01T00:00:00.000Z',
+    updatedAtIso: '2026-01-01T00:00:00.000Z',
+    createdBy: 'system'
+  }
 });

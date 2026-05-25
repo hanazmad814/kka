@@ -1,11 +1,24 @@
-import type { SceneDocument, ValidationResult } from '../../core/src/index';
+import type {
+  ProductCategory,
+  ProductDataModel,
+  ProductType,
+  SceneDocument,
+  ValidationResult,
+  GenerationPipelineStep
+} from '../../core/src/index';
 
-export type ProductType = 'restaurant' | 'business' | 'wedding' | (string & {});
+export type { ProductCategory, ProductDataModel, ProductType, GenerationPipelineStep };
 
-export interface ProductDataModel {
+export interface ProductDraft {
   id: string;
-  schemaVersion: string;
-  fields: Record<string, unknown>;
+  productType: ProductType;
+  productCategory: ProductCategory;
+  createdAtIso: string;
+  updatedAtIso: string;
+  dataModel: ProductDataModel;
+  scene: SceneDocument;
+  currentStep: GenerationPipelineStep;
+  qualityScore?: number;
 }
 
 export interface ColorPalette { primary: string; secondary: string; background: string; text: string; }
@@ -28,15 +41,23 @@ export interface SiteDesignSystem {
 
 export interface SitePageRef { id: string; path: string; title: string; }
 export interface SiteMap { pages: SitePageRef[]; }
-
 export interface SiteNavItem { id: string; label: string; pageId: string; children?: SiteNavItem[]; }
 export interface SiteNavigation { items: SiteNavItem[]; }
-
 export interface PublishConfig { allowDraftPublish: false; channel: 'production' | 'staging'; }
+
+export interface OutcomeFirstMeta {
+  pipeline: GenerationPipelineStep[];
+  currentStep: GenerationPipelineStep;
+  selectedVariantId?: string;
+  generatedVariantCount: number;
+  qualityScore?: number;
+  publishReady?: boolean;
+}
 
 export interface ProductSite {
   id: string;
   productType: ProductType;
+  productCategory: ProductCategory;
   schemaVersion: string;
   siteMap: SiteMap;
   navigation: SiteNavigation;
@@ -44,6 +65,7 @@ export interface ProductSite {
   pages: Record<string, SceneDocument>;
   dataModel: ProductDataModel;
   publishConfig: PublishConfig;
+  outcomeFirstMeta: OutcomeFirstMeta;
 }
 
 export interface PublishedRoute { path: string; pageId: string; }

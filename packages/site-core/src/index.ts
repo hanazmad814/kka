@@ -6,5 +6,8 @@ export * from './renderer';
 export * from './renderer-input';
 export * from './drafts';
 export * from './storage';
-
 export * from './assets';
+
+export { OUTCOME_FIRST_PIPELINE, SMART_PRODUCT_CATEGORIES } from '../../core/src/index';
+
+export * from './renderer/site-renderer.types';

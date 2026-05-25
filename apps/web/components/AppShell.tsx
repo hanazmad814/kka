@@ -13,22 +13,35 @@ const navItems = [
   { href: '/create', label: 'Create' }
 ];
 
+const pipeline = ['Input Data', 'Generate 3-6 Variants', 'Select', 'Quick Edit', 'Quality Check', 'Publish'];
+
 export function AppShell({ children, title, description, action }: AppShellProps) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Smart Product Builder</p>
-            <h1 className="text-base font-semibold sm:text-lg">Outcome-first website builder</h1>
+        <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Smart Product Builder</p>
+              <h1 className="text-base font-semibold sm:text-lg">Outcome-first · Editor-second platform</h1>
+              <p className="mt-1 text-xs text-slate-500">Tạo sản phẩm hoàn chỉnh trong vài phút cho non-designer và non-developer.</p>
+            </div>
+            <nav className="flex flex-wrap items-center gap-2 text-sm">
+              {navItems.map((item) => (
+                <Link key={item.href} href={item.href} className="rounded-md px-3 py-2 hover:bg-slate-100">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
-          <nav className="flex items-center gap-3 text-sm">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className="rounded-md px-3 py-2 hover:bg-slate-100">
-                {item.label}
-              </Link>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {pipeline.map((step) => (
+              <span key={step} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-700">
+                {step}
+              </span>
             ))}
-          </nav>
+          </div>
         </div>
       </header>
 
