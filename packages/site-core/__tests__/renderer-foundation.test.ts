@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createProductSiteFixture } from '../src/fixtures';
-import { PreviewRenderer, PublicRenderer, renderProductSite } from '../src/renderer';
+import { PreviewRenderer, PublicRenderer, SiteRenderer, renderProductSite } from '../src/renderer';
 
 describe('site-core renderer foundation', () => {
   it('render valid ProductSite fixture', () => {
@@ -17,5 +17,13 @@ describe('site-core renderer foundation', () => {
   it('PreviewRenderer wraps separately from PublicRenderer', () => {
     const html = PreviewRenderer.render(createProductSiteFixture());
     expect(html).toContain('data-preview-wrapper="true"');
+  });
+
+  it('SiteRenderer contract renders site/page', () => {
+    const site = createProductSiteFixture();
+    const siteHtml = SiteRenderer.renderSite(site, { mode: 'public' });
+    const pageHtml = SiteRenderer.renderPage(site, site.siteMap.pages[0], 'preview');
+    expect(siteHtml).toContain('data-site-id="site-1"');
+    expect(pageHtml).toContain(`data-page-id="${site.siteMap.pages[0].id}"`);
   });
 });

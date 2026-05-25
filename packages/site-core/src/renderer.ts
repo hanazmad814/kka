@@ -1,5 +1,6 @@
 import { createRendererContext, renderSceneDocument, type RenderMode } from '../../core/src/renderer';
 import type { ProductSite, SitePageRef } from './types';
+import type { SiteRendererContract } from './renderer/site-renderer.types';
 
 export const renderSitePage = (site: ProductSite, page: SitePageRef, mode: RenderMode): string => {
   const scene = site.pages[page.id];
@@ -24,4 +25,10 @@ export const PublicRenderer = {
 
 export const PreviewRenderer = {
   render: (site: ProductSite): string => `<div data-preview-wrapper="true">${renderProductSite(site, 'preview')}</div>`
+};
+
+
+export const SiteRenderer: SiteRendererContract = {
+  renderSite: (site, options) => renderProductSite(site, options.mode),
+  renderPage: (site, page, mode) => renderSitePage(site, page, mode)
 };
